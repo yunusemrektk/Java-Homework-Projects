@@ -1,0 +1,249 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Nov 28 17:32:51 2019
+
+@author: YUNUS EMRE
+"""
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.metrics import mean_squared_eror, r2_score
+from sklearn import metrics
+from sklearn.linear_model import LinearRegression
+
+df = pd.read_csv('AAPL.csv')
+
+print(df.head())
+
+
+data = pd.DataFrame(df, columns=['Date', 'Close'])
+
+datapol = pd.DataFrame(df, columns=['Date', 'Close'])
+print(data.head())
+
+# =============================================================================
+# # Converting Date String to integer time
+# =============================================================================
+import matplotlib.dates as mdates
+years = mdates.YearLocator()
+yearsFmt = mdates.DateFormatter('%Y')
+
+
+# Create subplots to plot graph and control axes
+fig, ax = plt.subplots()
+ax.plot(data['Date'], data['Close'])
+
+# Format the ticks
+ax.xaxis.set_major_locator(years)
+ax.xaxis.set_major_formatter(yearsFmt)
+
+# =============================================================================
+# # Original Data Graph
+# =============================================================================
+plt.title('Close stock Price [2010-2019]', fontsize=16)
+plt.xlabel('Date', fontsize=14)
+plt.ylabel('Closing stock price $', fontsize=14)
+fig.autofmt_xdate()
+plt.show() 
+
+# =============================================================================
+# Converting data iterable
+# =============================================================================
+x = data['Date']
+y = data['Close']
+
+x= pd.to_datetime(x)
+
+xtmp =np.array(x.index).reshape(-1,1)
+ytmp =np.array(y).reshape(-1,1)
+
+xtmp=pd.DataFrame(xtmp)
+ytmp=pd.DataFrame(ytmp)
+
+# Import package for splitting data set
+from sklearn.model_selection import train_test_split
+
+# Split data into train and test set: 85% / 15%
+x_train,x_test,y_train ,y_test = train_test_split(xtmp,ytmp, test_size=0.20, random_state=42)
+#ptrain, ptest = train_test_split(datapol, test_size=0.20, random_state=42)
+
+
+# =============================================================================
+# # Create LinearRegression Object
+# =============================================================================
+model = LinearRegression()
+model.fit(x_train, y_train)
+y_train_pred = model.predict(x_train)
+print(y_train_pred)
+
+# =============================================================================
+# Scores
+# =============================================================================
+print('Slope: ', np.asscalar(np.squeeze(model.coef_)))
+# The Intercept
+print('Intercept: ', model.intercept_)
+
+# Train set graph
+
+plt.title('Linear Regression | Price vs Time (TRAINED)')
+plt.scatter(x_train, y_train, edgecolor='w', label='Actual Price')
+plt.plot(x_train, y_train_pred, color='r', label='Predicted Price')
+plt.xlabel('Integer Date')
+plt.ylabel('Stock Price')
+plt.legend()
+plt.show()
+"""
+# Prediction froum our Model
+# Creating test arrays
+x_test = np.array(test.index).reshape(-1, 1)
+y_test = test['Close']
+
+y_pred = model.predict(x_test)
+"""
+dftest = pd.DataFrame(test, columns=['Date', 'Close', 'Prediction'])
+dftest['Prediction'] = y_pred
+
+# dftest['Moving Avarage'] = df.iloc[:,1].rolling(window=3).mean()
+
+print(dftest.head())
+# Prediction array
+
+
+# Create subplots to plot graph and control axes
+fig, ax = plt.subplots()
+#dftest.plot(x='Date', y=['Close', 'Prediction'], kind='bar', ax=ax)
+"""
+# Set figure title
+plt.title('Comparison Predicted vs Actual Price in Sample data selection', fontsize=16)
+# Set x label
+plt.xlabel('Date', fontsize=14)
+# Set y label
+plt.ylabel('Stock Price in $', fontsize=14)
+# Show plot
+#plt.show()
+"""
+# Plot fitted line
+plt.figure(1, figsize=(16, 10))
+plt.title('Linear Regression | Price vs Time (TEST)')
+plt.plot(x_test, model.predict(x_test), color='r', label='Predicted Price')
+plt.scatter(x_test, y_test, edgecolor='w', label='Actual Price')
+
+plt.xlabel('Integer Date')
+plt.ylabel('Stock Price in $')
+
+plt.show()
+"""
+# Scatter figure
+plt.scatter(y_test, y_pred, color='gray')
+plt.xlabel('Actual Prices')
+plt.ylabel('Predicted Prices')
+
+plt.title('Predicted vs Actual Price')
+plt.show()
+
+from scipy.stats import norm
+
+# Fit a normal distribution to the data:
+mu, std = norm.fit(y_test - y_pred)
+
+ax = sns.distplot((y_test - y_pred), label='Residual Histogram & Distribution')
+
+# Calculate the pdf over a range of values
+x = np.linspace(min(y_test - y_pred), max(y_test - y_pred), 100)
+p = norm.pdf(x, mu, std)
+
+# And plot on the same axes that seaborn put the histogram
+ax.plot(x, p, 'r', lw=2, label='Normal Distribution')
+
+plt.legend()
+plt.show()
+"""
+dftest['Close'].describe()
+print(dftest['Close'].describe())
+
+# Traing score of LR
+print('Mean Absolute Error:', metrics.mean_absolute_error(y_train, y_train_pred))
+print('Mean Squared Error:', metrics.mean_squared_error(y_train, y_train_pred))
+print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_train, y_train_pred)))
+print('R2: ', metrics.r2_score(y_train, y_train_pred))
+print()
+# Test score of LR
+print('Mean Absolute Error:', metrics.mean_absolute_error(y_test, y_pred))
+print('Mean Squared Error:', metrics.mean_squared_error(y_test, y_pred))
+print('Root Mean Squared Error:', np.sqrt(metrics.mean_squared_error(y_test, y_pred)))
+print('R2: ', metrics.r2_score(y_test, y_pred))
+
+from sklearn.metrics import explained_variance_score
+
+print(explained_variance_score(y_test, y_pred))
+# POLYNOMIAL REGRESSION
+
+
+# Reshape index for poly
+datapol=data
+
+px = datapol['Date']
+py = datapol['Close']
+
+px= pd.to_datetime(px)
+pxtmp =np.array(px.index).reshape(-1,1)
+pytmp =np.array(py).reshape(-1,1)
+
+# Fitting Polynomial Regression to the dataset
+
+    
+poly= PolynomialFeatures(degree=4)
+px_new= poly.fit_transform(pxtmp)
+pmodel = LinearRegression()
+pmodel.fit(px_new, pytmp)
+py_pred = pmodel.predict(px_new)
+plt.plot(pxtmp,pytmp)
+plt.plot(pxtmp,py_pred)
+plt.show()
+
+
+# Converting Pd DataFrame by numpy array.
+pytmp=pd.DataFrame(pytmp)
+pxtmp=pd.DataFrame(pxtmp)
+
+dftestpol = pd.DataFrame(datapol, columns=['Date', 'Close', 'Polynomial'])
+dftestpol['Polynomial'] = py_pred
+dftestpol['Date']=pxtmp
+dftestpol['Close']=pytmp
+
+#Creating 30 random values for visualization the bars.
+randints=np.random.randint(201,size=30)
+dftestsample=dftestpol[dftestpol.index.isin(randints)]
+dftestsample.plot(x='Date',y=['Close','Polynomial'],kind='bar')
+plt.show()
+#Polynomial Regression Scores
+rmsetrain = np.sqrt(mean_squared_error(pytmp, py_pred))
+r2train = r2_score(pytmp, py_pred)
+print('Polynomial Regression Scores')
+print('Root Mean Squared Error: ',rmsetrain)
+print('R2: ',r2train)
+#Mark Every Point if there is wrong prediction
+
+
+a=dftestpol['Close']
+b=dftestpol['Polynomial']
+date = dftestpol['Date']
+a = np.array(a).reshape(-1,1)
+b= np.array(b).reshape(-1,1)
+
+c=[]
+myint =0
+for i in range (0,250):
+        if  abs(b[i]-a[i]) >12:
+            c.append(i)
+            c[myint]=i      
+            myint=myint+1
+            
+plt.plot(date,a)
+plt.plot(date,b,marker='|',markevery=c)
+plt.show()
+
+
+
+
