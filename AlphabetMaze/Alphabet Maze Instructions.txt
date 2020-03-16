@@ -92,20 +92,4 @@ Loop 1 : 3,4 – 3,5 – 3,6 – 2,6 – 1,6 – 1,5 – 1,4 – 1,3 – 2,3 –
 4,2 – 4,3 – 4,4
 Loop 2: 3,10 – 4,10 – 4,9 – 3,9
 Loop 3: 4,6 – 5,6 – 5,7 – 6,7 – 6,6 – 6,5 – 5,5 – 4,5
-Bonus : In this maze there is one loop which doesn’t start with letter “a” but some other letter. If your
-program find those loops you will get an extra 15 marks.
-Rules for HW Submission
-. You have to write your HW in NetBeans environment.
-. You have to write a report with name "Report_HW3.pdf" explaining your HW (purpose, how did you
-solve it, algorithm etc.) and the environment you used (NetBeans, for example). The person who
-read your report can easily use the class you have written.
-. Submission should be in the form of a zip. When extracted, the result should be a single folder with the
-name "HW1", "HW2", or "HW3"
-. Don't forget to put your report into the zip file.
-. The name of your project will be "Name_Surame_HW3. e.g. Lutfullah_Arici_HW2.
-. If you do not obey the project sending rules 10% of your grade will be dismissed.
-. You have to bundle your whole project folder into your HW3.zip file.
-. If I extract your project file, then import to my environment and if it doesn't work, you will be graded
-on 50 not 100. (Double check. It saves life)
-. Do HW by yourself.
-. Be honest. 
+
